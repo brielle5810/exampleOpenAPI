@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+  title: Movie Ticket Seat API
+  description: API for viewing, selecting, and deselecting movie ticket seats (in order to purchase tickets for a specific movie and time)
+  version: 1.0.0
+servers:
+  - url: https://exampleserver.com/server
+    description: Main (production) server
+paths:
+  /seat-select:
+    get:
+      summary: Get available seats for a specific movie and time time 
+      parameters:
+        - name: timeSlotID
+          in: query
+          description: The ID of the time to retrieve seats for
+          required: true
+          schema:
+            type: integer
+        - name: movieID
+          in: query
+          description: The ID of the movie to retrieve seats for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of available seats for the movie and time slot
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+    post:
+      summary: Select available seats for a specific movie and time
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timeSlotID:
+                  type: integer
+                  description: The ID of the time to select seats from
+                movieID:
+                  type: integer
+                  description: The ID of the movie to select seats from
+                seats:
+                  type: array
+                  items:
+                    type: integer
+                  description: An array of seatIDs to be selected.
+      responses:
+        '200':
+          description: Seats successfully selected
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request, invalid movie, time, or seat selection.
+        '404':
+          description: Seat not found.
+        '500':
+          description: Internal server error. Seat selection failed.
+    delete:
+      summary: Deselect selected seats for a specific movie and time
+      parameters:
+        - name: timeSlotID
+          in: query
+          description: The ID of the time to deselect seats from
+          required: true
+          schema:
+            type: integer
+        - name: movieID
+          in: query
+          description: The ID of the movie to deselect seats from
+          required: true
+          schema:
+            type: integer
+        - name: seats
+          in: query
+          description: An array of seatIDs to be deselected
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: Seats successfully deselected
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request, invalid movie, time, or seat selection.
+        '404':
+          description: Seat not found.
+        '500':
+          description: Internal server error. Seat deselection failed.
